@@ -1,5 +1,5 @@
 from enum import Enum
-from input import click, move, holdKey, W, A, S, D, Q, pressKey, releaseKey
+from input import click, move, holdKey, W, A, S, D, Q, X, pressKey, releaseKey
 from image import capture_screenshot, try_find_poi
 import threading
 import random
@@ -7,6 +7,8 @@ import sys
 import time
 import logging
 import win32gui
+import win32api
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -83,20 +85,23 @@ def select_loadout():
             logger.warning(f"Failed to find loadout confidence level: {c}")
             tries += 1
 
+def use_equipments():
+    keys = [Q, X]
+    key = random.choice(keys)
+    pressKey(key)
+    time.sleep(0.5)
+    releaseKey(key)
 
 def afk_keyboard_movement():
     logger.debug("Start keyboard movement")
     keys = [W, A, S, D]
     while current_state == State.IN_GAME:
         duration_sec = random.randint(5, 15)
+        dice = random.randint(0, 10)
+        if dice <= 5:
+            use_equipments()
         key = random.choice(keys)
-        if key == Q:
-            pressKey(key)
-            time.sleep(0.5)
-            releaseKey(key)
-            duration_sec = 0
-        else:
-            holdKey(key, duration_sec)
+        holdKey(key, duration_sec)
         time.sleep((duration_sec / 2 ) + 0.5)
     logger.debug("Ending keyboard movement")
     
@@ -104,7 +109,7 @@ def afk_keyboard_movement():
 def set_window_to_foreground():
     hwnd = win32gui.FindWindow(None, "Call of Duty®")
     assert hwnd != 0, "Failed to find call of poopy window"
-    win32gui.SetForegroundWindow(hwnd)
+    # win32gui.SetForegroundWindow(hwnd)
 
 def set_state():
     global current_state

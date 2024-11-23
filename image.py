@@ -16,7 +16,6 @@ def resize_window():
 
 def capture_screenshot():
     i = ImageGrab.grab()
-    i.save("s.png")
     arr = np.array(i)
     return arr
 
