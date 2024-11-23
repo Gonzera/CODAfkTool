@@ -6,6 +6,7 @@ import random
 import sys
 import time
 import logging
+import win32gui
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -100,10 +101,15 @@ def afk_keyboard_movement():
     logger.debug("Ending keyboard movement")
     
     
+def set_window_to_foreground():
+    hwnd = win32gui.FindWindow(None, "Call of Duty®")
+    assert hwnd != 0, "Failed to find call of poopy window"
+    win32gui.SetForegroundWindow(hwnd)
 
 def set_state():
     global current_state
     while True:
+        set_window_to_foreground()
         screenshot = capture_screenshot()
         for s in State:
             x, y, confidence = try_find_poi(s.value, screenshot=screenshot)
