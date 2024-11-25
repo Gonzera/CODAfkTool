@@ -20,6 +20,7 @@ logger.addHandler(handler)
 
 class State(Enum):
     AFK_KICK = ["afk_kick"]
+    FIND_MATCH_ALT = ["find_match_alt"]
     FIND_MATCH = ["find_match"]
     IN_QUEUE = ["in_q"]
     IN_GAME = ["in_game"]
@@ -40,6 +41,23 @@ def handle_state_change():
         select_loadout()
     if current_state == State.AFK_KICK:
         handle_afk_kick() 
+    if current_state == State.FIND_MATCH_ALT:
+        fix_find_match()
+
+def fix_find_match():
+    tries = 0
+    while tries < 10:
+        x, y, c = try_find_poi("find_match_alt")
+        if c > 0.8:
+            logger.debug(f"Found find match alt button at {x} {y} with confidence of {c}")
+            click(x, y - 180)
+            # time.sleep(0.5)
+            click(x, y - 180)
+            break
+        else:
+            logger.warning("Failed to find exit_afk_button")
+            tries += 1
+
 
 def handle_afk_kick():
     logger.info("We got kicked :(")
@@ -57,8 +75,9 @@ def handle_afk_kick():
 
 def find_match_sequence():
     tries = 0
+    logger.info("Starting menu sequence")
     while tries < 10:
-        logger.info("Starting menu sequence")
+        # logger.info("Starting menu sequence")
         x, y, c = try_find_poi("find_match")
         if c > 0.8:
             logger.debug(f"Found find_match at {x} {y}")
