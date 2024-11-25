@@ -100,7 +100,6 @@ def select_loadout():
     tries = 0
     while tries < 10:
         x, y, c = try_find_poi("loadout")
-        logger.debug(f"Found loadout at {x} {y}")
         if c > 0.8:
             click(x + 10, y + 10)
             logger.debug(f"Found loadout at {x} {y}")
