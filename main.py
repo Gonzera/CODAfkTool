@@ -128,8 +128,7 @@ def afk_keyboard_movement():
     while current_state == State.IN_GAME:
         duration_sec = random.randint(5, 15)
         dice = random.randint(0, 10)
-        if dice <= 5:
-            use_equipments()
+        use_equipments()
         if dice <= 6:
             special_movement()
         key = random.choice(keys)
