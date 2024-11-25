@@ -19,19 +19,19 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 class State(Enum):
-    AFK_KICK = "afk_kick"
-    FIND_MATCH = "find_match"
-    IN_QUEUE = "in_q"
-    IN_GAME = "in_game"
+    AFK_KICK = ["afk_kick"]
+    FIND_MATCH = ["find_match"]
+    IN_QUEUE = ["in_q"]
+    IN_GAME = ["in_game"]
     # IN_GAME_WZ = "in_game_wz"
-    LOADOUT_SELECTION = "loadout"
+    LOADOUT_SELECTION = ["loadout"]
 
 current_state: State | None = State.IN_GAME
 
 def handle_state_change():
     global current_state
     if current_state == State.IN_GAME:
-        threading.Thread(target=afk_keyboard_movement).start()
+        threading.Thread(target=afk_keyboard_movement, name="afk_keyboard").start()
     if current_state == State.FIND_MATCH:
         find_match_sequence()
     if current_state == State.IN_QUEUE:
@@ -86,7 +86,7 @@ def select_loadout():
             tries += 1
 
 def use_equipments():
-    keys = [Q, X]
+    keys = [Q]
     key = random.choice(keys)
     pressKey(key)
     time.sleep(0.5)
@@ -117,12 +117,13 @@ def set_state():
         set_window_to_foreground()
         screenshot = capture_screenshot()
         for s in State:
-            x, y, confidence = try_find_poi(s.value, screenshot=screenshot)
-            if confidence > 0.8:
-                if current_state != s:
-                    current_state = s
-                    handle_state_change()
-                    logger.info(f"State changed: {s}")
+            for v in s.value:
+                x, y, confidence = try_find_poi(v, screenshot=screenshot)
+                if confidence > 0.8:
+                    if current_state != s:
+                        current_state = s
+                        handle_state_change()
+                        logger.info(f"State changed: {s}")
         time.sleep(1)
     
 
