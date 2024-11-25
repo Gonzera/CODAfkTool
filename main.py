@@ -1,5 +1,5 @@
 from enum import Enum
-from input import click, move, holdKey, W, A, S, D, Q, X, pressKey, releaseKey
+from input import C, E, SPACE, click, move, holdKey, W, A, S, D, Q, X, pressKey, releaseKey
 from image import capture_screenshot, try_find_poi
 import threading
 import random
@@ -110,10 +110,17 @@ def select_loadout():
             tries += 1
 
 def use_equipments():
-    keys = [Q]
+    keys = [Q, Q, E]
     key = random.choice(keys)
     pressKey(key)
     time.sleep(0.5)
+    releaseKey(key)
+
+def special_movement():
+    keys = [SPACE, C]
+    key = random.choice(keys)
+    pressKey(key)
+    time.sleep(0.3)
     releaseKey(key)
 
 def afk_keyboard_movement():
@@ -124,6 +131,8 @@ def afk_keyboard_movement():
         dice = random.randint(0, 10)
         if dice <= 5:
             use_equipments()
+        if dice <= 6:
+            special_movement()
         key = random.choice(keys)
         holdKey(key, duration_sec)
         time.sleep((duration_sec / 2 ) + 0.5)
